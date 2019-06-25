@@ -1,6 +1,6 @@
 # Swifty Scripts
 
-Various scripts made in swift I use to help automate some processes. 
+A tool made in swift I use to help automate some processes. Originally was built to help automate the merging of different branches and deploying process for PW. But now will be made general for different use cases like automatic branch deletion.
 
 ***
 ## Getting Started ##

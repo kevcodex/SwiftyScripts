@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Slack</key>
+	<dict>
+		<key>path</key>
+		<string>SLACK_PATH</string>
+		<key>channel</key>
+		<string>SLACK_CHANNEL</string>
+	</dict>
+	<key>Jenkins</key>
+	<dict>
+		<key>credentials</key>
+		<dict>
+			<key>email</key>
+			<string>EMAIL</string>
+			<key>apiToken</key>
+			<string>API_TOKEN</string>
+		</dict>
+		<key>delayBetweenBuilds</key>
+		<integer>88</integer>
+		<key>label</key>
+		<dict>
+			<key>prefix</key>
+			<string>PREFIX</string>
+			<key>numberOfConfigurations</key>
+			<integer>99</integer>
+		</dict>
+		<key>schemes</key>
+		<array>
+			<dict>
+				<key>target</key>
+				<string>FOXNOW</string>
+			</dict>
+			<dict>
+				<key>target</key>
+				<string>FOXNation</string>
+			</dict>
+			<dict>
+				<key>target</key>
+				<string>FOXSports</string>
+			</dict>
+		</array>
+	</dict>
+	<key>TargetsToRun</key>
+	<array>
+		<string>FOXNOW</string>
+		<string>NatGeo</string>
+		<string>FXNOW</string>
+		<string>FXNOW-FYC</string>
+		<string>FOXNation</string>
+		<string>FOXSports</string>
+	</array>
+	<key>BranchesToRun</key>
+	<array>
+		<string>consumerGrowth</string>
+		<string>core</string>
+	</array>
+</dict>
+</plist>

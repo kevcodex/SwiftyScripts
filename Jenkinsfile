@@ -59,7 +59,7 @@ pipeline {
                 mv tmp Sources/Source/App.swift
                 """
 
-                sh 'swift build -c release --static-swift-stdlib'
+                sh 'swift build -c release'
                 sh 'cp .build/release/SwiftyScripts releases/${Release_Version}'
                 sh 'cd releases; tar czf ${Release_Version}.tar.gz ${Release_Version}'
                 sh 'cd releases; echo Go to https://bitbucket.org/kevcodex/tm-homebrew-tap/src/master/ and create a new brew file. Replace the sha256 with the new sha256 below and create a new url path for the tar ball > tmp.txt'

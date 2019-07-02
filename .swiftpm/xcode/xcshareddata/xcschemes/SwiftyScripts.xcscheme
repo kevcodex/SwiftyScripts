@@ -91,6 +91,14 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "start -v 3.14"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "build"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-pretty"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -98,6 +106,13 @@
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "LANG"
+            value = "en_US.UTF-8"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

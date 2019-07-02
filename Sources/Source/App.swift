@@ -38,10 +38,12 @@ public struct App {
         let versionExecutable = VersionExecutable(version: version)
         let helpExecutable = HelpExecutable()
         let startExecutable = StartExecutable()
+        let buildExecutable = BuildExecutable()
         
         terminal.run([versionExecutable,
                       helpExecutable,
-                      startExecutable],
+                      startExecutable,
+                      buildExecutable],
                      inputs: arguments)
     }
 }

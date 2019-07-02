@@ -305,26 +305,8 @@ struct StartExecutable: Executable {
             }
             
             // Build all targets
-            for target in targetsToRun {
-                
-                Console.writeMessage("**Building \(target)...")
-                // xcodebuild -workspace FOXNOW.xcworkspace -configuration QA -scheme NatGeo -sdk appletvos11.2
-                let buildCommand = XcodeBuildCommand(arguments: [.workspace(named: "FOXNOW.xcworkspace"),
-                                                                 .sdk(type: .tvOSSimulator),
-                                                                 .configuration(type: .qa),
-                                                                 .scheme(named: target),
-                                                                 .clean,
-                                                                 .build,
-                                                                 .modernSystem(shouldUse: false)])
-                
-                if runPretty,
-                    let xcprettyRun = AnyCommand(rawStringInput: buildCommand.commandAsString() + " " + "| xcpretty && exit ${PIPESTATUS[0]}") {
-                    
-                    CommandHelper.runAndPrintBashCommand(xcprettyRun)
-                } else {
-                    CommandHelper.runAndPrintCommand(buildCommand)
-                }
-            }
+            let buildExecutable = BuildExecutable()
+            buildExecutable.run(targetsToRun: targetsToRun, runPretty: runPretty)
             
             // MARK: Push Team Merge
             Console.writeMessage("**Pushing \(teamMergeBranch.path)...")

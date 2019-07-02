@@ -79,11 +79,22 @@ struct StartExecutable: Executable {
                 Darwin.exit(1)
         }
         
-        // If there is a previous verion it will pull from that version.
+        // If there is a previous version it will pull from that version.
         var previousReleaseBranch: Branch?
         if let previousVersionArgument: PreviousVersionArgument = argumentParser.retrieveArgument(string: previousVersionArgument.argumentName),
             let previousVersionString = previousVersionArgument.value {
+            
             previousReleaseBranch = Branch(type: .release, version: previousVersionString)
+            
+            guard let versionComponent = Version(string: version), let previousVersionComponent = Version(string: previousVersionString) else {
+                Console.writeMessage("Invalid Version", styled: .red)
+                Darwin.exit(1)
+            }
+            
+            guard versionComponent > previousVersionComponent else {
+                Console.writeMessage("Version is less than previous version, please ensure Version is larger.", styled: .red)
+                Darwin.exit(1)
+            }
         }
         
         var runPostOnly = false

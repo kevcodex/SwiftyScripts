@@ -90,16 +90,16 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "start -v 3.14"
-            isEnabled = "NO">
+            argument = "start -v 3.14 -pv 3.15"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "build"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-pretty"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-dir /Users/kevin/Documents/Xcode\ Projects/team_merge/app"

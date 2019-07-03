@@ -90,7 +90,15 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "start -v 3.14 -pv 3.15"
+            argument = "start -v 3.14 -pv 3.13"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "jenkins -v 3.14"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-u kchen@phunware.com"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

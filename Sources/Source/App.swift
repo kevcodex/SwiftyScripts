@@ -39,11 +39,13 @@ public struct App {
         let helpExecutable = HelpExecutable()
         let startExecutable = StartExecutable()
         let buildExecutable = BuildExecutable()
+        let jenkinsExecutable = JenkinsExecutable()
         
         terminal.run([versionExecutable,
                       helpExecutable,
                       startExecutable,
-                      buildExecutable],
+                      buildExecutable,
+                      jenkinsExecutable],
                      inputs: arguments)
     }
 }

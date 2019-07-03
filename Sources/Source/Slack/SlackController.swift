@@ -19,6 +19,11 @@ final class SlackController {
         operationQueue.maxConcurrentOperationCount = 5
     }
     
+    func setup(slackUser: String, channel: String, path: String) {
+        self.slackUser = SlackUser(from: slackUser)
+        self.team = SlackTeam(channel: channel, path: path)
+    }
+    
     func postStartMessage(completion: @escaping (Result<Void, SlackError>) -> Void) {
         let message = SlackMessage.startedMessage(slackID: slackUser?.taggedString ?? "Anonymous")
         

@@ -11,7 +11,7 @@ import MiniNe
 
 // TODO: Look into seperating executables rather than arguments like jenkins only
 /// The action to execute the script.
-struct StartExecutable: Executable {
+struct StartExecutable: Executable, SlackMessageDeliverable {
     var argumentString: String {
         return "start"
     }
@@ -31,7 +31,6 @@ struct StartExecutable: Executable {
         let previousVersionArgument = PreviousVersionArgument()
         let directoryArgument = DirectoryArgument()
         let postPRArgument = PostPRArgument()
-        let jenkinsOnlyArgument = JenkinsOnlyArgument()
         let jenkinsOffArgument = JenkinsOffArgument()
         let prettyArgument = PrettyArgument()
         let noInputArgument = NoInputArgument()
@@ -43,7 +42,6 @@ struct StartExecutable: Executable {
              previousVersionArgument.argumentName: previousVersionArgument,
              directoryArgument.argumentName: directoryArgument,
              postPRArgument.argumentName: postPRArgument,
-             jenkinsOnlyArgument.argumentName: jenkinsOnlyArgument,
              jenkinsOffArgument.argumentName: jenkinsOffArgument,
              prettyArgument.argumentName: prettyArgument,
              noInputArgument.argumentName: noInputArgument,
@@ -102,18 +100,8 @@ struct StartExecutable: Executable {
             runPostOnly = true
         }
         
-        var runJenkinsOnly = false
-        if let _: JenkinsOnlyArgument = argumentParser.retrieveArgument(string: jenkinsOnlyArgument.argumentName) {
-            runJenkinsOnly = true
-        }
-        
         var shouldRunJenkins = true
         if let _: JenkinsOffArgument = argumentParser.retrieveArgument(string: jenkinsOffArgument.argumentName) {
-            
-            guard runJenkinsOnly == false else {
-                Console.writeMessage("You can't run jenkins only and turn off jenkins", styled: .red)
-                Darwin.exit(1)
-            }
             
             shouldRunJenkins = false
         }
@@ -198,17 +186,17 @@ struct StartExecutable: Executable {
         }
         
         // MARK: Get slack info
-        let slackInfo = SetupHelper.createSlackInfo(from: dictionary)
+        setupSlackController(from: dictionary, slackUser: user)
+        
         var slackDescription = "Slack: N/A"
-        if let slackInfo = slackInfo {
+        if let slackChannel = slackController.team?.channel,
+            let slackPath = slackController.team?.path {
             slackDescription =
             """
             Slack:
-                Channel: \(slackInfo.channel)
-                Path: \(slackInfo.path)
+                Channel: \(slackChannel)
+                Path: \(slackPath)
             """
-            
-            slackController.team = SlackTeam(channel: slackInfo.channel, path: slackInfo.path)
         }
         
         // MARK: - Confirm Selection
@@ -221,7 +209,6 @@ struct StartExecutable: Executable {
             Previous Version: \(previousReleaseBranch?.version ?? "nil")
             Run Post PR Only: \(runPostOnly)
             Will Run Jenkins: \(shouldRunJenkins)
-            Run Jenkins Only: \(runJenkinsOnly)
             Run xcPretty: \(runPretty)
             Will Redirect To Bitbucket: \(shouldRedirectToBitbucket)
             User: \(user.nonEmpty ?? "Anonymous")
@@ -238,8 +225,6 @@ struct StartExecutable: Executable {
         
         Console.waitForInputIfNeeded(shouldRequest: shouldRequestInput, question: "Run Team Merge with these parameters above? (y/n) ", invalidText: "Invalid Input", validInputs: ["y"], exitInputs: ["n"])
         
-        slackController.slackUser = SlackUser(from: user)
-        
         slackController.postStartMessage { result in
             
             switch result {
@@ -248,12 +233,6 @@ struct StartExecutable: Executable {
             case .failure(let error):
                 Console.writeWarning(error)
             }
-        }
-        
-        if runJenkinsOnly,
-            shouldRunJenkins {
-            runJenkins(with: dictionary, version: version, shouldRequestInput: shouldRequestInput)
-            return
         }
         
         // MARK: - Merge branches to Team Merge
@@ -434,219 +413,8 @@ struct StartExecutable: Executable {
         }
         
         if shouldRunJenkins {
-            runJenkins(with: dictionary, version: version, shouldRequestInput: shouldRequestInput)
-        }
-    }
-    
-    /// Exits the script with a message to console and slack.
-    /// Should just be used when script is actually running.
-    private func exit(_ int: Int32, with message: String) -> Never {
-        
-        Console.writeMessage(message, styled: .red)
-        
-        slackController.postErrorMessage(errorMessage: message) { result in
-            
-            switch result {
-            case .success:
-                Console.writeMessage("Successfully notified slack! \n", styled: .blue)
-            case .failure(let error):
-                Console.writeWarning(error)
-            }
-        }
-        
-        Darwin.exit(int)
-    }
-    
-    // MARK: - Run Jenkins
-    private func runJenkins(with configDictionary: [String: Any]?, version: String, shouldRequestInput: Bool) {
-        
-        guard let configDictionary = configDictionary else {
-            let message = "Missing or skewed plist config."
-            exit(1, with: message)
-        }
-        
-        guard var jenkinsConfig = SetupHelper.createJenkinsConfig(from: configDictionary, version: version) else {
-            let message = "Something went wrong initializing jenkins config"
-            exit(1, with: message)
-        }
-        
-        let jenkinsController = JenkinsController(credentials: jenkinsConfig.credentials)
-        
-        if !jenkinsConfig.hasValidBuildNumbers() {
-            
-            Console.writeMessage("**No specified start build number in config, will attempt to get start build number based on last builds")
-            
-            var targetBuildMapping = TargetBuildMapping()
-            
-            let targets = jenkinsConfig.schemes.compactMap { $0.target }
-            
-            Console.writeMessage("**Fetching lastest build jobs info")
-            
-            jenkinsController.fetchLatestBuildNumbers(targets: targets) { (result) in
-                switch result {
-                case .success(let mapping):
-                    Console.writeMessage("**Successfully fetched latest build info for targets \n",
-                                         styled: .blue)
-                    
-                    targetBuildMapping = mapping.mapValues {
-                        JenkinsStartBuildNumber(value: String($0 + jenkinsConfig.label.numberOfConfigurations),
-                                                source: .jenkinsBuildInfoOnline)
-                    }
-                case .failure(let error):
-                    let message = "Something went wrong fetching build numbers, error: \(error)"
-                    self.exit(1, with: message)
-                }
-            }
-            
-            guard !targetBuildMapping.isEmpty else {
-                let message = "Empty target build number mapping"
-                exit(1, with: message)
-            }
-            
-            // Use the config start build number if there is one present
-            for scheme in jenkinsConfig.schemes {
-                if let buildNumber = scheme.startBuildNumber {
-                    targetBuildMapping[scheme.target] = buildNumber
-                }
-            }
-            
-            jenkinsConfig.updateAllBuildNumbers(with: targetBuildMapping)
-        }
-
-        Console.writeMessage("Will run jenkins deployment jobs with parameters:", styled: .blue)
-        
-        Console.writeMessage(
-            """
-            
-            Delay Between Targets: \(jenkinsConfig.delayBetweenBuilds) seconds
-
-            """, styled: .blue
-        )
-        
-        for scheme in jenkinsConfig.schemes {
-            
-            guard let version = scheme.version else {
-                let message = "Missing version in scheme for \(scheme.target)"
-                Console.writeMessage("Missing version in scheme for \(scheme.target)", styled: .red)
-                exit(1, with: message)
-            }
-            
-            guard let startBuildNumber = scheme.startBuildNumber else {
-                let message = "Missing start build number for \(scheme.target)"
-                exit(1, with: message)
-            }
-            
-            guard let startBuildNumberIntegar = Int(startBuildNumber.value) else {
-                let message = "Start build number is not an integar for \(scheme.target)"
-                exit(1, with: message)
-            }
-            
-            let lastBuildNumber = startBuildNumberIntegar + jenkinsConfig.label.numberOfConfigurations - 1
-            
-            let labelDescription = "\(jenkinsConfig.label.prefix)_\(scheme.target)_\(version).\(startBuildNumber.value)-\(lastBuildNumber)"
-            
-            Console.writeMessage(
-                """
-                
-                Scheme Target: \(scheme.target)
-                    Version: \(version)
-                    Start Build Number: \(startBuildNumber.value) (Set by \(startBuildNumber.source?.rawValue ?? "Unknown"))
-                    Label: \(labelDescription)
-                    Configuration: \(scheme.configuration ?? "Jenkins Default")
-                    Xcode Version: \(scheme.xcodeVersion ?? "Jenkins Default")
-                    Deploy: \(scheme.shouldDeploy?.description ?? "Jenkins Default")
-                    Distribute: \(scheme.shouldDistribute?.description ?? "Jenkins Default")
-                    DSYMS: \(scheme.shouldReleaseDSYMS?.description ?? "Jenkins Default")
-                    Reduce Builds: \(scheme.shouldReduceBuilds?.description ?? "Jenkins Default")
-                    Notify Slack: \(scheme.shouldNotifySlack?.description ?? "Jenkins Default")
-                    Submission Candidate: \(scheme.isSubmissionCandidate?.description ?? "Jenkins Default")
-                    Known Issues: \(scheme.knownIssues ?? "Jenkins Default")
-                """, styled: .blue
-            )
-        }
-        
-        Console.waitForInputIfNeeded(shouldRequest: shouldRequestInput, question: "Run Jenkins job with these parameters above? (y/n)", invalidText: "Invalid Input", validInputs: ["y"], exitInputs: ["n"])
-        
-        slackController.postStartJenkinsMessage { result in
-            
-            switch result {
-            case .success:
-                Console.writeMessage("Successfully notified slack! \n", styled: .blue)
-            case .failure(let error):
-                Console.writeWarning(error)
-            }
-        }
-        
-        for (index, scheme) in jenkinsConfig.schemes.enumerated() {
-            
-            guard let version = scheme.version else {
-                let message = "Missing version in scheme for \(scheme.target)"
-                Console.writeMessage("Missing version in scheme for \(scheme.target)", styled: .red)
-                exit(1, with: message)
-            }
-            
-            guard let startBuildNumber = scheme.startBuildNumber else {
-                let message = "Missing start build number for \(scheme.target)"
-                exit(1, with: message)
-            }
-            
-            guard let startBuildNumberIntegar = Int(startBuildNumber.value) else {
-                let message = "Start build number is not an integar for \(scheme.target)"
-                exit(1, with: message)
-            }
-            
-            Console.writeMessage("**Starting Jenkins job for front door: \(scheme.target)")
-            
-            jenkinsController.startDeploymentBuild(with: scheme.instancesAsDictionary) { (result) in
-                switch result {
-                case .success:
-                    Console.writeMessage("**Successfully started Jenkins job for front door: \(scheme.target) \n", styled: .blue)
-                case .failure(let error):
-                    let message = "Failed starting Jenkins job for front door: \(scheme.target), error: \(error)"
-                    self.exit(1, with: message)
-                }
-            }
-            
-            // TODO: - Find a better way to handle if build is in queue, the description isn't set properly
-            // Temporary set description after delay
-            let setDescriptionBlock: () -> Void = {
-                
-                Console.writeMessage("**Setting description for: \(scheme.target)")
-                let lastBuildNumber = startBuildNumberIntegar + jenkinsConfig.label.numberOfConfigurations - 1
-                
-                let description = "\(jenkinsConfig.label.prefix)_\(scheme.target)_\(version).\(startBuildNumber.value)-\(lastBuildNumber)"
-                
-                jenkinsController.addDescriptionToLastBuild(description: description) { (result) in
-                    switch result {
-                    case .success:
-                        Console.writeMessage("**Successfully set description for front door: \(scheme.target) \n", styled: .blue)
-                    case .failure(let error):
-                        Console.writeMessage("WARNING: Failed to set description for: \(scheme.target), error: \(error)", styled: .yellow)
-                    }
-                }
-            }
-            
-            if jenkinsConfig.schemes.count != (index + 1) {
-                Console.writeMessage("**Waiting \(jenkinsConfig.delayBetweenBuilds) seconds to start next build...", styled: .blue)
-                sleep(UInt32(jenkinsConfig.delayBetweenBuilds))
-                
-                setDescriptionBlock()
-            } else {
-                sleep(UInt32(100))
-                setDescriptionBlock()
-            }
-        }
-        
-        Console.writeMessage("Success! Finished Running Jenkins Jobs! You owe Kevin 5,000,000 PC now", styled: .green)
-        
-        slackController.postFinishedJenkinsMessage { result in
-            
-            switch result {
-            case .success:
-                Console.writeMessage("Successfully notified slack! \n", styled: .blue)
-            case .failure(let error):
-                Console.writeWarning(error)
-            }
+            let jenkinsExecutable = JenkinsExecutable()
+            jenkinsExecutable.run(with: dictionary, version: version, shouldRequestInput: shouldRequestInput)
         }
     }
 }

@@ -58,8 +58,8 @@ class ArgumentParser {
         }
     }
     
-    func retrieveArgument<T>(string: String) -> T? where T: Argument {
-        return inputtedArgumentsDict[string] as? T
+    func retrieveArgument<T>() -> T? where T: Argument {
+        return inputtedArgumentsDict[T.argumentName] as? T
     }
     
     func argumentsIsEmpty() -> Bool {

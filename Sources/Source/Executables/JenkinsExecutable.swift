@@ -55,7 +55,7 @@ struct JenkinsExecutable: Executable, SlackMessageDeliverable {
         // If running from xcode make sure to set custom working path in edit scheme -> options
         
         var currentDirectory = FileManager.default.currentDirectoryPath
-        if let directoryArgument: DirectoryArgument = argumentParser.retrieveArgument(string: DirectoryArgument.argumentName),
+        if let directoryArgument: DirectoryArgument = argumentParser.retrieveArgument(),
             let directoryValue = directoryArgument.value  {
             currentDirectory = directoryValue
             
@@ -73,7 +73,7 @@ struct JenkinsExecutable: Executable, SlackMessageDeliverable {
         let dictionary = NSDictionary(contentsOf: url) as? [String: Any]
         
         // MARK: Get Version
-        guard let versionArg: VersionArgument = argumentParser.retrieveArgument(string: VersionArgument.argumentName),
+        guard let versionArg: VersionArgument = argumentParser.retrieveArgument(),
             let version = versionArg.value else {
                 Console.writeMessage("Skewed or no version specified", styled: .red)
                 Darwin.exit(1)
@@ -81,13 +81,13 @@ struct JenkinsExecutable: Executable, SlackMessageDeliverable {
         
         // MARK: Get should input
         var shouldRequestInput = true
-        if let _: NoInputArgument = argumentParser.retrieveArgument(string: NoInputArgument.argumentName) {
+        if let _: NoInputArgument = argumentParser.retrieveArgument() {
             shouldRequestInput = false
         }
         
         // MARK: Get user
         var user = ""
-        if let userArgument: UserArgument = argumentParser.retrieveArgument(string: UserArgument.argumentName), let value = userArgument.value {
+        if let userArgument: UserArgument = argumentParser.retrieveArgument(), let value = userArgument.value {
             user = value
         }
         

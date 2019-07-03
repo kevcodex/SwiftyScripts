@@ -40,7 +40,7 @@ struct BuildExecutable: Executable {
         }
         
         var runPretty = false
-        if let _: PrettyArgument = argumentParser.retrieveArgument(string: PrettyArgument.argumentName) {
+        if let _: PrettyArgument = argumentParser.retrieveArgument() {
             
             if let prettyCheckCommand = AnyCommand(rawStringInput: "which xcpretty"),
                 CommandHelper.runCommandSilently(prettyCheckCommand) {
@@ -52,7 +52,7 @@ struct BuildExecutable: Executable {
         }
         
         var currentDirectory = FileManager.default.currentDirectoryPath
-        if let directoryArgument: DirectoryArgument = argumentParser.retrieveArgument(string: DirectoryArgument.argumentName),
+        if let directoryArgument: DirectoryArgument = argumentParser.retrieveArgument(),
             let directoryValue = directoryArgument.value  {
             currentDirectory = directoryValue
             

@@ -71,7 +71,7 @@ struct StartExecutable: Executable, SlackMessageDeliverable {
         }
         
         // Get values of arguments
-        guard let versionArg: VersionArgument = argumentParser.retrieveArgument(string: VersionArgument.argumentName),
+        guard let versionArg: VersionArgument = argumentParser.retrieveArgument(),
             let version = versionArg.value else {
                 Console.writeMessage("Skewed or no version specified", styled: .red)
                 Darwin.exit(1)
@@ -79,7 +79,7 @@ struct StartExecutable: Executable, SlackMessageDeliverable {
         
         // If there is a previous version it will pull from that version.
         var previousReleaseBranch: Branch?
-        if let previousVersionArgument: PreviousVersionArgument = argumentParser.retrieveArgument(string: PreviousVersionArgument.argumentName),
+        if let previousVersionArgument: PreviousVersionArgument = argumentParser.retrieveArgument(),
             let previousVersionString = previousVersionArgument.value {
             
             previousReleaseBranch = Branch(type: .release, version: previousVersionString)
@@ -96,18 +96,18 @@ struct StartExecutable: Executable, SlackMessageDeliverable {
         }
         
         var runPostOnly = false
-        if let _: PostPRArgument = argumentParser.retrieveArgument(string: PostPRArgument.argumentName) {
+        if let _: PostPRArgument = argumentParser.retrieveArgument() {
             runPostOnly = true
         }
         
         var shouldRunJenkins = true
-        if let _: JenkinsOffArgument = argumentParser.retrieveArgument(string: JenkinsOffArgument.argumentName) {
+        if let _: JenkinsOffArgument = argumentParser.retrieveArgument() {
             
             shouldRunJenkins = false
         }
         
         var runPretty = false
-        if let _: PrettyArgument = argumentParser.retrieveArgument(string: PrettyArgument.argumentName) {
+        if let _: PrettyArgument = argumentParser.retrieveArgument() {
             
             if let prettyCheckCommand = AnyCommand(rawStringInput: "which xcpretty"),
                 CommandHelper.runCommandSilently(prettyCheckCommand) {
@@ -119,17 +119,17 @@ struct StartExecutable: Executable, SlackMessageDeliverable {
         }
         
         var shouldRequestInput = true
-        if let _: NoInputArgument = argumentParser.retrieveArgument(string: NoInputArgument.argumentName) {
+        if let _: NoInputArgument = argumentParser.retrieveArgument() {
             shouldRequestInput = false
         }
         
         var shouldRedirectToBitbucket = true
-        if let _: NoBitbucketRedirectArgument = argumentParser.retrieveArgument(string: NoBitbucketRedirectArgument.argumentName) {
+        if let _: NoBitbucketRedirectArgument = argumentParser.retrieveArgument() {
             shouldRedirectToBitbucket = false
         }
         
         var currentDirectory = FileManager.default.currentDirectoryPath
-        if let directoryArgument: DirectoryArgument = argumentParser.retrieveArgument(string: DirectoryArgument.argumentName),
+        if let directoryArgument: DirectoryArgument = argumentParser.retrieveArgument(),
             let directoryValue = directoryArgument.value  {
             currentDirectory = directoryValue
             
@@ -181,7 +181,8 @@ struct StartExecutable: Executable, SlackMessageDeliverable {
         
         // MARK: Get user
         var user = ""
-        if let userArgument: UserArgument = argumentParser.retrieveArgument(string: UserArgument.argumentName), let value = userArgument.value {
+        if let userArgument: UserArgument = argumentParser.retrieveArgument(),
+            let value = userArgument.value {
             user = value
         }
         

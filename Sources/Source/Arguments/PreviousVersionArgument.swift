@@ -9,7 +9,7 @@ import Foundation
 
 /// example: -pv 3.9
 struct PreviousVersionArgument: Argument {
-    var argumentName: String {
+    static var argumentName: String {
         return "pv"
     }
 

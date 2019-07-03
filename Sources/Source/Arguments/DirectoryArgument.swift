@@ -9,7 +9,7 @@ import Foundation
 
 /// Set specific directory path to run merge. example: -dir /Downloads/app
 struct DirectoryArgument: Argument {
-    var argumentName: String {
+    static var argumentName: String {
         return "dir"
     }
     

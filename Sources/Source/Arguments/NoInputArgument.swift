@@ -9,7 +9,7 @@ import Foundation
 
 /// if specified, then will not request user input
 struct NoInputArgument: Argument {
-    var argumentName: String {
+    static var argumentName: String {
         return "no-input"
     }
     

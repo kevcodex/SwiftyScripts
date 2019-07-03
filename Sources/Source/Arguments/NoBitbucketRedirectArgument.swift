@@ -8,7 +8,7 @@
 import Foundation
 
 struct NoBitbucketRedirectArgument: Argument {
-    var argumentName: String {
+    static var argumentName: String {
         return "no-bitbucket"
     }
     

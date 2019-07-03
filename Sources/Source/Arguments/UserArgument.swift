@@ -9,7 +9,7 @@ import Foundation
 
 /// E.g. -u kchen@phunware.com
 struct UserArgument: Argument {
-    var argumentName: String {
+    static var argumentName: String {
         return "u"
     }
     

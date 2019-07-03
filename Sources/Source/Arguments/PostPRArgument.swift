@@ -9,7 +9,7 @@ import Foundation
 
 /// Argument to define if script should only run the post PR part
 struct PostPRArgument: Argument {
-    var argumentName: String {
+    static var argumentName: String {
         return "post-only"
     }
     

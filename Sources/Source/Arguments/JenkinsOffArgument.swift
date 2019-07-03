@@ -9,7 +9,7 @@ import Foundation
 
 /// Argument to define if script should not run jenkins
 struct JenkinsOffArgument: Argument {
-    var argumentName: String {
+    static var argumentName: String {
         return "jenkins-off"
     }
     

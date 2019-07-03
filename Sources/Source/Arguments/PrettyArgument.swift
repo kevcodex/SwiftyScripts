@@ -9,7 +9,7 @@ import Foundation
 
 /// example: -pretty
 struct PrettyArgument: Argument {
-    var argumentName: String {
+    static var argumentName: String {
         return "pretty"
     }
     

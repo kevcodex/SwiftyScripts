@@ -10,7 +10,7 @@ import ScriptHelpers
 
 struct JenkinsExecutable: Executable, SlackMessageDeliverable {
     var argumentString: String {
-        "jenkins"
+        return "jenkins"
     }
     
     let slackController = SlackController()

@@ -13,6 +13,10 @@ struct PrettyArgument: Argument {
         return "pretty"
     }
     
+    var description: String {
+        return "Will run xcpretty during execution"
+    }
+    
     var requiresValue: Bool {
         return false
     }

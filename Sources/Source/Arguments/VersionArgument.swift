@@ -13,6 +13,10 @@ struct VersionArgument: Argument {
         return "v"
     }
     
+    var description: String {
+        return "The version that you want to run a team merge on"
+    }
+    
     var requiresValue: Bool {
         return true
     }

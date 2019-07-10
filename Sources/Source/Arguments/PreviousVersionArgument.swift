@@ -12,6 +12,10 @@ struct PreviousVersionArgument: Argument {
     static var argumentName: String {
         return "pv"
     }
+    
+    var description: String {
+        return "The previous build number to pull from"
+    }
 
     var requiresValue: Bool {
         return true

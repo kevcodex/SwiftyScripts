@@ -9,8 +9,12 @@ import Foundation
 import ScriptHelpers
 
 struct BuildExecutable: Executable {
-    var argumentString: String {
+    var argumentName: String {
         return "build"
+    }
+    
+    var description: String {
+        return "Build all the targets listed in the `TargetsToRun` config"
     }
     
     func run(arguments: [String]?) {

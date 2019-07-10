@@ -9,8 +9,13 @@ import Foundation
 import ScriptHelpers
 
 struct JenkinsExecutable: Executable, SlackMessageDeliverable {
-    var argumentString: String {
+    
+    var argumentName: String {
         return "jenkins"
+    }
+    
+    var description: String {
+        return "Triggers a Jenkins build for every Jenkins.schemes listed"
     }
     
     let slackController: SlackController

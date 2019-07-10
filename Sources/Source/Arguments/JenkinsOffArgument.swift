@@ -13,6 +13,10 @@ struct JenkinsOffArgument: Argument {
         return "jenkins-off"
     }
     
+    var description: String {
+        return "Turns off deploying to Jenkins"
+    }
+    
     var requiresValue: Bool {
         return false
     }

@@ -13,6 +13,10 @@ struct UserArgument: Argument {
         return "u"
     }
     
+    var description: String {
+        return "The current user's email"
+    }
+    
     var requiresValue: Bool {
         return true
     }

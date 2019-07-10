@@ -13,6 +13,10 @@ struct DirectoryArgument: Argument {
         return "dir"
     }
     
+    var description: String {
+        return "Sets the directory path to run the script"
+    }
+    
     var requiresValue: Bool {
         return true
     }

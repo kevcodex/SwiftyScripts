@@ -8,8 +8,6 @@
 import Foundation
 
 /// Arguments that execute something.
-protocol Executable {
-    var argumentString: String { get }
-    
+protocol Executable: HelpDisplayable {    
     func run(arguments: [String]?)
 }

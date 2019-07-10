@@ -12,6 +12,10 @@ struct NoBitbucketRedirectArgument: Argument {
         return "no-bitbucket"
     }
     
+    var description: String {
+        return "Will not automatically redirect user to bitbucket during team merge"
+    }
+    
     var requiresValue: Bool {
         return false
     }

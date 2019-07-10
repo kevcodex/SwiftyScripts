@@ -15,6 +15,10 @@ class ArgumentParser {
     
     private var inputtedArgumentsDict: [String: Argument] = [:]
     
+    var arguments: [Argument] {
+        return argumentsToParse.map { $1 }
+    }
+    
     init(argumentsToParse: [String: Argument]) {
         
         self.argumentsToParse = argumentsToParse

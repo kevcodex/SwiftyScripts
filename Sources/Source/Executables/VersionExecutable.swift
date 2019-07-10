@@ -9,8 +9,13 @@ import Foundation
 import ScriptHelpers
 
 struct VersionExecutable: Executable {
-    var argumentString: String {
+    
+    var argumentName: String {
         return "-v"
+    }
+    
+    var description: String {
+        return "Shows the current version"
     }
     
     let version: String

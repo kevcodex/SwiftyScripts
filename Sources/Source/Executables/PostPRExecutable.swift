@@ -9,8 +9,13 @@ import ScriptHelpers
 import Foundation
 
 struct PostPRExecutable: Executable {
-    var argumentString: String {
+    
+    var argumentName: String {
         return "post-only"
+    }
+    
+    var description: String {
+        return "Only executes the post-PR portion of the team merge"
     }
     
     func run(arguments: [String]?) {

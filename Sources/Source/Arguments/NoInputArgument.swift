@@ -13,6 +13,10 @@ struct NoInputArgument: Argument {
         return "no-input"
     }
     
+    var description: String {
+        return "Will not request a user input to start"
+    }
+    
     var requiresValue: Bool {
         return false
     }

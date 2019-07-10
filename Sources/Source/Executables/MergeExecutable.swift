@@ -11,8 +11,13 @@ import MiniNe
 
 /// Perform a team merge
 struct MergeExecutable: Executable, SlackMessageDeliverable {
-    var argumentString: String {
+    
+    var argumentName: String {
         return "merge"
+    }
+    
+    var description: String {
+        return "Does a team merge"
     }
     
     let slackController: SlackController
@@ -63,7 +68,8 @@ struct MergeExecutable: Executable, SlackMessageDeliverable {
         
         // MARK: Handle Arguments
         if argumentParser.argumentsIsEmpty()  {
-            Console.showHelp()
+            showHelp(for: argumentParser.arguments)
+            Console.writeMessage("Need to specify arguments like -v", styled: .red)
             Darwin.exit(1)
         }
         

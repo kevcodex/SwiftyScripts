@@ -9,11 +9,16 @@ import Foundation
 import ScriptHelpers
 
 struct HelpExecutable: Executable {
-    var argumentString: String {
+    
+    var argumentName: String {
         return "-help"
     }
     
+    var description: String {
+        return "Shows list of arguments and executables"
+    }
+    
     func run(arguments: [String]?) {
-        Console.showHelp()
+        // Empty since Terminal will display the help
     }
 }

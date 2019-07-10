@@ -8,7 +8,7 @@
 import Foundation
 
 /// Model for an argument that someone defines
-protocol Argument {
+protocol Argument: HelpDescription {
     /// The raw string of the arugment that the user inputs. E.g. "v" or "help"
     static var argumentName: String { get }
     

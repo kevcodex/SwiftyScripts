@@ -21,7 +21,7 @@ extension Console {
             OPTIONS:
                 -v <value>      **REQUIRED** The version to perform the team merge on
                 -pv <value>     The previous version to pull from if any.
-                -dir <path>     Set the path of the FOXNOW directory. By default the path is the current working directory. This directory must contain a swiftyscripts/config/config.plist and FOXNOW.xcodeproj
+                -dir <path>     Set the path of the project directory. By default the path is the current working directory. This directory must contain a swiftyscripts/config/config.plist
                 -help           Display available options.
                 -jenkins-off     Will not run the jenkins deployment script. NOTE: You cannot have this flag off and -jenkinsonly on.
                 -post-only      Run only the post PR section of the script

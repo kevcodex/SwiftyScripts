@@ -128,12 +128,6 @@ struct MergeExecutable: Executable, SlackMessageDeliverable {
             CommandHelper.changeDirectory(to: currentDirectory)
         }
         
-        let foxNowPath = currentDirectory + "/FOXNOW.xcodeproj"
-        guard FileManager.default.fileExists(atPath: foxNowPath) else {
-            Console.writeMessage("Path: \(foxNowPath) does not contain FOXNOW project.", styled: .red)
-            Darwin.exit(1)
-        }
-        
         // MARK: Retrieve Plist
         // If running from xcode make sure to set custom working path in edit scheme -> options
         
@@ -146,6 +140,18 @@ struct MergeExecutable: Executable, SlackMessageDeliverable {
         
         let url = URL(fileURLWithPath: configPath)
         let dictionary = NSDictionary(contentsOf: url) as? [String: Any]
+        
+        // MARK: Get Project Name
+        guard let projectName = SetupHelper.projectName(from: dictionary) else {
+            Console.writeMessage("Missing Project Name", styled: .red)
+            Darwin.exit(1)
+        }
+        
+        let projectPath = currentDirectory + "/\(projectName)"
+        guard FileManager.default.fileExists(atPath: projectPath) else {
+            Console.writeMessage("Path: \(projectPath) does not contain an xcode project.", styled: .red)
+            Darwin.exit(1)
+        }
         
         // MARK: Define Branches
         let releaseBranch = Branch(type: .release, version: version)
@@ -197,6 +203,7 @@ struct MergeExecutable: Executable, SlackMessageDeliverable {
             """
             Will perform Team Merge with parameters:
             
+            Project: \(projectName)
             Working Directory: \(currentDirectory)
             Target Version: \(version),
             Previous Version: \(previousReleaseBranch?.version ?? "nil")
@@ -286,7 +293,7 @@ struct MergeExecutable: Executable, SlackMessageDeliverable {
         
         // Build all targets
         let buildExecutable = BuildExecutable()
-        buildExecutable.run(targetsToRun: targetsToRun, runPretty: runPretty)
+        buildExecutable.run(targetsToRun: targetsToRun, runPretty: runPretty, projectName: projectName)
         
         // MARK: Push Team Merge
         Console.writeMessage("**Pushing \(teamMergeBranch.path)...")

@@ -12,6 +12,15 @@ struct SetupHelper {
     
     private init() {}
     
+    static func projectName(from dictionary: [String: Any]?) -> String? {
+        
+        guard let dictionary = dictionary else {
+            return nil
+        }
+        
+        return dictionary[Keys.projectName] as? String        
+    }
+    
     static func createBranches(from dictionary: [String: Any]?, version: String) -> [Branch]? {
         
         guard let dictionary = dictionary else {
@@ -89,6 +98,7 @@ struct SetupHelper {
 private extension SetupHelper {
     struct Keys {
         
+        static let projectName = "project"
         static let targets = "TargetsToRun"
         static let branches = "BranchesToRun"
         static let jenkins = "Jenkins"

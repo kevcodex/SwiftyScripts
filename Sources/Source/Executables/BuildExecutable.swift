@@ -58,13 +58,7 @@ struct BuildExecutable: Executable {
             
             CommandHelper.changeDirectory(to: currentDirectory)
         }
-        
-        let foxNowPath = currentDirectory + "/FOXNOW.xcodeproj"
-        guard FileManager.default.fileExists(atPath: foxNowPath) else {
-            Console.writeMessage("Path: \(foxNowPath) does not contain FOXNOW project.", styled: .red)
-            Darwin.exit(1)
-        }
-        
+
         // MARK: Retrieve Plist
         // If running from xcode make sure to set custom working path in edit scheme -> options
         
@@ -78,22 +72,34 @@ struct BuildExecutable: Executable {
         let url = URL(fileURLWithPath: configPath)
         let dictionary = NSDictionary(contentsOf: url) as? [String: Any]
         
+        // MARK: Get Project Name
+        guard let projectName = SetupHelper.projectName(from: dictionary) else {
+            Console.writeMessage("Missing Project Name", styled: .red)
+            Darwin.exit(1)
+        }
+        
+        let projectPath = currentDirectory + "/\(projectName)"
+        guard FileManager.default.fileExists(atPath: projectPath) else {
+            Console.writeMessage("Path: \(projectPath) does not contain an xcode project.", styled: .red)
+            Darwin.exit(1)
+        }
+        
         // MARK: Define Targets
         guard let targetsToRun = SetupHelper.createTargets(from: dictionary) else {
             Console.writeMessage("Skewed, missing, or unspecified target type", styled: .red)
             Darwin.exit(1)
         }
         
-        run(targetsToRun: targetsToRun, runPretty: runPretty)
+        run(targetsToRun: targetsToRun, runPretty: runPretty, projectName: projectName)
     }
     
-    func run(targetsToRun: [String], runPretty: Bool) {
+    func run(targetsToRun: [String], runPretty: Bool, projectName: String) {
         // Build all targets
         for target in targetsToRun {
             
             Console.writeMessage("**Building \(target)...")
-            // xcodebuild -workspace FOXNOW.xcworkspace -configuration QA -scheme NatGeo -sdk appletvos11.2
-            let buildCommand = XcodeBuildCommand(arguments: [.workspace(named: "FOXNOW.xcworkspace"),
+            // xcodebuild -workspace EXAMPLE.xcworkspace -configuration QA -scheme FOO -sdk appletvos11.2
+            let buildCommand = XcodeBuildCommand(arguments: [.workspace(named: projectName),
                                                              .sdk(type: .tvOSSimulator),
                                                              .configuration(type: .qa),
                                                              .scheme(named: target),

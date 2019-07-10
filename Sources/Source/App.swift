@@ -37,7 +37,7 @@ public struct App {
         
         let versionExecutable = VersionExecutable(version: version)
         let helpExecutable = HelpExecutable()
-        let startExecutable = StartExecutable(slackController: SlackController())
+        let startExecutable = MergeExecutable(slackController: SlackController())
         let buildExecutable = BuildExecutable()
         let jenkinsExecutable = JenkinsExecutable(slackController: SlackController())
         let postPRExecutable = PostPRExecutable()

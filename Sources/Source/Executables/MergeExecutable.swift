@@ -1,5 +1,5 @@
 //
-//  StartExecutable.swift
+//  MergeExecutable.swift
 //  Source
 //
 //  Created by Kevin Chen on 10/23/18.
@@ -9,11 +9,10 @@ import Foundation
 import ScriptHelpers
 import MiniNe
 
-// TODO: Look into seperating executables rather than arguments like jenkins only
-/// The action to execute the script.
-struct StartExecutable: Executable, SlackMessageDeliverable {
+/// Perform a team merge
+struct MergeExecutable: Executable, SlackMessageDeliverable {
     var argumentString: String {
-        return "start"
+        return "merge"
     }
     
     let slackController: SlackController

@@ -90,7 +90,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "start -v 3.14 -pv 3.13"
+            argument = "merge -v 3.14 -pv 3.13"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

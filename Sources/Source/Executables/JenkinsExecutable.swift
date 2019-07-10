@@ -21,38 +21,49 @@ struct JenkinsExecutable: Executable, SlackMessageDeliverable {
     let slackController: SlackController
     
     func run(arguments: [String]?) {
-        guard let arguments = arguments,
-            !arguments.isEmpty else {
-                
-                Console.writeMessage("No arguments specified. At a minimum you need to specify version to build (e.g. swiftyscripts start -v 3.10)", styled: .red)
-                Darwin.exit(1)
-        }
         
         // MARK: Define and Parse Arguments
         let versionArgument = VersionArgument()
         let directoryArgument = DirectoryArgument()
         let noInputArgument = NoInputArgument()
         let userArgument = UserArgument()
+        let helpArgument = HelpArgument()
         
         let argumentDictionary: [String: Argument] =
             [VersionArgument.argumentName: versionArgument,
              DirectoryArgument.argumentName: directoryArgument,
              NoInputArgument.argumentName: noInputArgument,
-             UserArgument.argumentName: userArgument
+             UserArgument.argumentName: userArgument,
+             HelpArgument.argumentName: helpArgument
         ]
+        
+        let arguments = argumentDictionary.map { $1 }
         
         let argumentParser = ArgumentParser(argumentsToParse: argumentDictionary)
         do {
             try argumentParser.parse(inputs: CommandLine.arguments)
         } catch ArgumentParser.ParserError.unknownArgument(let input) {
-            // nothing For now
+            showHelp(for: arguments)
             Console.writeMessage("Undefined argument: \(input). You may need to define in Argument Parser", styled: .red)
             Darwin.exit(1)
         } catch ArgumentParser.ParserError.missingValue(let argument) {
+            showHelp(for: arguments)
             Console.writeMessage("Missing value for argument: \(argument)", styled: .red)
             Darwin.exit(1)
         } catch {
+            showHelp(for: arguments)
             Console.writeMessage("Unknown Error: \(error)", styled: .red)
+            Darwin.exit(1)
+        }
+        
+        if let _: HelpArgument = argumentParser.retrieveArgument() {
+            showHelp(for: arguments)
+            return
+        }
+        
+        if argumentParser.argumentsIsEmpty()  {
+            showHelp(for: arguments)
+            Console.writeMessage("Need to specify arguments like -v", styled: .red)
             Darwin.exit(1)
         }
         

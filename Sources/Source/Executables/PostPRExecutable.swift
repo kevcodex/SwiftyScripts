@@ -22,24 +22,41 @@ struct PostPRExecutable: Executable {
         // MARK: Define and Parse Arguments
         let versionArgument = VersionArgument()
         let directoryArgument = DirectoryArgument()
+        let helpArgument = HelpArgument()
         
         let argumentDictionary: [String: Argument] =
             [VersionArgument.argumentName: versionArgument,
-             DirectoryArgument.argumentName: directoryArgument
+             DirectoryArgument.argumentName: directoryArgument,
+             HelpArgument.argumentName: helpArgument
         ]
+        
+        let arguments = argumentDictionary.map { $1 }
         
         let argumentParser = ArgumentParser(argumentsToParse: argumentDictionary)
         do {
             try argumentParser.parse(inputs: CommandLine.arguments)
         } catch ArgumentParser.ParserError.unknownArgument(let input) {
-            // nothing For now
+            showHelp(for: arguments)
             Console.writeMessage("Undefined argument: \(input). You may need to define in Argument Parser", styled: .red)
             Darwin.exit(1)
         } catch ArgumentParser.ParserError.missingValue(let argument) {
+            showHelp(for: arguments)
             Console.writeMessage("Missing value for argument: \(argument)", styled: .red)
             Darwin.exit(1)
         } catch {
+            showHelp(for: arguments)
             Console.writeMessage("Unknown Error: \(error)", styled: .red)
+            Darwin.exit(1)
+        }
+        
+        if let _: HelpArgument = argumentParser.retrieveArgument() {
+            showHelp(for: arguments)
+            return
+        }
+        
+        if argumentParser.argumentsIsEmpty()  {
+            showHelp(for: arguments)
+            Console.writeMessage("Need to specify arguments like -v", styled: .red)
             Darwin.exit(1)
         }
         

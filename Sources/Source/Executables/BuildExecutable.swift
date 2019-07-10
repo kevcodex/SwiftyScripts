@@ -22,25 +22,36 @@ struct BuildExecutable: Executable {
 
         let directoryArgument = DirectoryArgument()
         let prettyArgument = PrettyArgument()
+        let helpArgument = HelpArgument()
         
         let argumentDictionary: [String: Argument] =
             [DirectoryArgument.argumentName: directoryArgument,
-             PrettyArgument.argumentName: prettyArgument
+             PrettyArgument.argumentName: prettyArgument,
+             HelpArgument.argumentName: helpArgument
         ]
+        
+        let arguments = argumentDictionary.map { $1 }
         
         let argumentParser = ArgumentParser(argumentsToParse: argumentDictionary)
         do {
             try argumentParser.parse(inputs: CommandLine.arguments)
         } catch ArgumentParser.ParserError.unknownArgument(let input) {
-            // nothing For now
+            showHelp(for: arguments)
             Console.writeMessage("Undefined argument: \(input). You may need to define in Argument Parser", styled: .red)
             Darwin.exit(1)
         } catch ArgumentParser.ParserError.missingValue(let argument) {
+            showHelp(for: arguments)
             Console.writeMessage("Missing value for argument: \(argument)", styled: .red)
             Darwin.exit(1)
         } catch {
+            showHelp(for: arguments)
             Console.writeMessage("Unknown Error: \(error)", styled: .red)
             Darwin.exit(1)
+        }
+        
+        if let _: HelpArgument = argumentParser.retrieveArgument() {
+            showHelp(for: arguments)
+            return
         }
         
         var runPretty = false

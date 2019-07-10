@@ -37,15 +37,17 @@ public struct App {
         
         let versionExecutable = VersionExecutable(version: version)
         let helpExecutable = HelpExecutable()
-        let startExecutable = StartExecutable()
+        let startExecutable = StartExecutable(slackController: SlackController())
         let buildExecutable = BuildExecutable()
-        let jenkinsExecutable = JenkinsExecutable()
+        let jenkinsExecutable = JenkinsExecutable(slackController: SlackController())
+        let postPRExecutable = PostPRExecutable()
         
         terminal.run([versionExecutable,
                       helpExecutable,
                       startExecutable,
                       buildExecutable,
-                      jenkinsExecutable],
+                      jenkinsExecutable,
+                      postPRExecutable],
                      inputs: arguments)
     }
 }

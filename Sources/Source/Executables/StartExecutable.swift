@@ -16,7 +16,7 @@ struct StartExecutable: Executable, SlackMessageDeliverable {
         return "start"
     }
     
-    let slackController = SlackController()
+    let slackController: SlackController
     
     func run(arguments: [String]?) {
         guard let arguments = arguments,
@@ -366,42 +366,8 @@ struct StartExecutable: Executable, SlackMessageDeliverable {
         }
         
         // MARK: - Post-PR
-        
-        // MARK: Remove any local change anomolies
-        Console.writeMessage("**Discarding Potential Local Changes...")
-        let discardCommand = GitCommand(arguments: [.reset])
-        CommandHelper.runCommand(discardCommand)
-        
-        // MARK: Fetch
-        Console.writeMessage("**Fetching...")
-        let fetchCommand = GitCommand(arguments: [.fetchAll])
-        CommandHelper.runCommand(fetchCommand)
-        
-        for branch in developBranchesToRun {
-            
-            // MARK: Checkout
-            Console.writeMessage("**Changing branch to \(branch.path)")
-            let checkoutCommand = GitCommand(arguments: [.checkout(branch: branch.path)])
-            CommandHelper.runCommand(checkoutCommand)
-            
-            // MARK: Pull Self
-            Console.writeMessage("**Pulling \(branch.path)...")
-            var pullCommand = GitCommand(arguments: [.pull(branch: nil)])
-            CommandHelper.runCommand(pullCommand)
-            
-            // MARK: Pull from Release
-            Console.writeMessage("**Pulling from \(releaseBranch.path)...")
-            pullCommand = GitCommand(arguments: [.pull(branch: releaseBranch.path)])
-            CommandHelper.runCommand(pullCommand)
-            
-            // MARK: Push
-            Console.writeMessage("**Pushing \(branch.path)...")
-            let pushCommand = GitCommand(arguments: [.push])
-            CommandHelper.runCommand(pushCommand)
-            
-        }
-        
-        Console.writeMessage("Success! Finished Team Merge! You owe Kevin 5,000,000 PC now", styled: .green)
+        let postPRExecutable = PostPRExecutable()
+        postPRExecutable.run(developBranchesToRun: developBranchesToRun, releaseBranch: releaseBranch)
         
         slackController.postFinishedTeamMergeMessage { result in
             
@@ -413,8 +379,9 @@ struct StartExecutable: Executable, SlackMessageDeliverable {
             }
         }
         
+        // MARK: - Jenkins
         if shouldRunJenkins {
-            let jenkinsExecutable = JenkinsExecutable()
+            let jenkinsExecutable = JenkinsExecutable(slackController: slackController)
             jenkinsExecutable.run(with: dictionary, version: version, shouldRequestInput: shouldRequestInput)
         }
     }

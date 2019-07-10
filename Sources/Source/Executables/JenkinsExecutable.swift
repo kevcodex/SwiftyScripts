@@ -13,7 +13,7 @@ struct JenkinsExecutable: Executable, SlackMessageDeliverable {
         return "jenkins"
     }
     
-    let slackController = SlackController()
+    let slackController: SlackController
     
     func run(arguments: [String]?) {
         guard let arguments = arguments,

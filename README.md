@@ -3,6 +3,17 @@
 A tool made in swift I use to help automate some processes. Originally was built to help automate the merging of different branches and deploying process for PW. But now will be made general for different use cases like automatic branch deletion.
 
 ***
+## Description ##
+USAGE: swiftyscripts [command] <options>
+
+COMMANDS:
+* -v: Shows the current version 
+* -help: Shows list of arguments and executables 
+* merge: Does a team merge 
+* build: Build all the targets listed in the `TargetsToRun` config 
+* jenkins: Triggers a Jenkins build for every Jenkins.schemes listed 
+* post-only: Only executes the post-PR portion of the team merge 
+
 ## Getting Started ##
 * Clone this project
 * `cd` into project directory

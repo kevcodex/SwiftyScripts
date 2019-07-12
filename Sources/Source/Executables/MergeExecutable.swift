@@ -24,51 +24,19 @@ struct MergeExecutable: Executable, SlackMessageDeliverable {
     
     func run(arguments: [String]?) {
         // MARK: Define and Parse Arguments
-        let versionArgument = VersionArgument()
-        let previousVersionArgument = PreviousVersionArgument()
-        let directoryArgument = DirectoryArgument()
-        let jenkinsOffArgument = JenkinsOffArgument()
-        let prettyArgument = PrettyArgument()
-        let noInputArgument = NoInputArgument()
-        let noBitbucketArgument = NoBitbucketRedirectArgument()
-        let userArgument = UserArgument()
-        let helpArgument = HelpArgument()
-        
-        let argumentDictionary: [String: Argument] =
-            [VersionArgument.argumentName: versionArgument,
-             PreviousVersionArgument.argumentName: previousVersionArgument,
-             DirectoryArgument.argumentName: directoryArgument,
-             JenkinsOffArgument.argumentName: jenkinsOffArgument,
-             PrettyArgument.argumentName: prettyArgument,
-             NoInputArgument.argumentName: noInputArgument,
-             NoBitbucketRedirectArgument.argumentName: noBitbucketArgument,
-             UserArgument.argumentName: userArgument,
-             HelpArgument.argumentName: helpArgument
+        let arguments: [Argument] = [
+            VersionArgument(),
+            PreviousVersionArgument(),
+            DirectoryArgument(),
+            JenkinsOffArgument(),
+            PrettyArgument(),
+            NoInputArgument(),
+            NoBitbucketRedirectArgument(),
+            UserArgument(),
+            HelpArgument()
         ]
         
-        let arguments = argumentDictionary.map { $1 }
-        
-        let argumentParser = ArgumentParser(argumentsToParse: argumentDictionary)
-        do {
-            try argumentParser.parse(inputs: CommandLine.arguments)
-        } catch ArgumentParser.ParserError.unknownArgument(let input) {
-            showHelp(for: arguments)
-            Console.writeMessage("Undefined argument: \(input). You may need to define in Argument Parser", styled: .red)
-            Darwin.exit(1)
-        } catch ArgumentParser.ParserError.missingValue(let argument) {
-            showHelp(for: arguments)
-            Console.writeMessage("Missing value for argument: \(argument)", styled: .red)
-            Darwin.exit(1)
-        } catch {
-            showHelp(for: arguments)
-            Console.writeMessage("Unknown Error: \(error)", styled: .red)
-            Darwin.exit(1)
-        }
-        
-        if let _: HelpArgument = argumentParser.retrieveArgument() {
-            showHelp(for: arguments)
-            return
-        }
+        let argumentParser = parseArguments(arguments)
         
         // MARK: Handle Arguments
         if argumentParser.argumentsIsEmpty()  {

@@ -10,6 +10,7 @@ import ScriptHelpers
 
 protocol HelpDescription {
     var argumentName: String { get }
+    /// The description that will display in help
     var description: String { get }
 }
 

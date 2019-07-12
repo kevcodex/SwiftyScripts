@@ -41,13 +41,15 @@ public struct App {
         let buildExecutable = BuildExecutable()
         let jenkinsExecutable = JenkinsExecutable(slackController: SlackController())
         let postPRExecutable = PostPRExecutable()
+        let branchDeleter = BranchDeleterExecutable()
         
         terminal.run([versionExecutable,
                       helpExecutable,
                       startExecutable,
                       buildExecutable,
                       jenkinsExecutable,
-                      postPRExecutable],
+                      postPRExecutable,
+                      branchDeleter],
                      inputs: arguments)
     }
 }

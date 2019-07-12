@@ -59,5 +59,19 @@
 		<string>consumerGrowth</string>
 		<string>core</string>
 	</array>
+	<key>Purger</key>
+	<dict>
+		<key>branchFolder</key>
+		<string>BRANCH_FOLDER</string>
+		<key>Jira</key>
+		<dict>
+			<key>url</key>
+			<string>JIRA_URL</string>
+			<key>email</key>
+			<string>JIRA_EMAIL</string>
+			<key>password</key>
+			<string>JIRA_PASSWORD</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

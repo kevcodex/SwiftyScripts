@@ -96,4 +96,18 @@ extension Command {
             }
         }
     }
+    
+    func runBash(completion: @escaping (Result<String, RunError>) -> Void) {
+        
+        do {
+            let output = try shell.runBash(commandAsString())
+            completion(Result(value: output))
+        } catch {
+            if let shellError = error as? ShellError {
+                completion(Result(error: RunError.shellError(shellError)))
+            } else {
+                completion(Result(error: RunError.other(error)))
+            }
+        }
+    }
 }

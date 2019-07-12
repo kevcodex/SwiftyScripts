@@ -65,6 +65,10 @@ class Shell {
         try runAndPrint("/bin/bash", ["-c", bashCommand])
     }
     
+    func runBash(_ bashCommand: String) throws -> String {
+        return try run("/bin/bash", ["-c", bashCommand])
+    }
+    
     /// Runs a command and outputs the result after running the command
     @discardableResult
     func run(_ executable: String, _ args: [String]) throws -> String {

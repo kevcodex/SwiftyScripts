@@ -61,6 +61,8 @@
 	</array>
 	<key>Purger</key>
 	<dict>
+		<key>repoURL</key>
+		<string>REPO_URL</string>
 		<key>branchFolder</key>
 		<string>BRANCH_FOLDER</string>
 		<key>Jira</key>

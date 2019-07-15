@@ -42,9 +42,23 @@ struct BranchDeleterExecutable: Executable {
             CommandHelper.changeDirectory(to: currentDirectory)
         }
         
+        let configPath = currentDirectory + "/swiftyscripts/config/config.plist"
+        
+        guard FileManager.default.fileExists(atPath: configPath) else {
+            Console.writeMessage("Directory does not have config, please create a config at path '/swiftyscripts/config/config.plist'.", styled: .red)
+            Darwin.exit(1)
+        }
+        
+        let url = URL(fileURLWithPath: configPath)
+        
+        guard let purgerConfig = SetupHelper.createPurgerConfig(from: url) else {
+            Console.writeMessage("Something went wrong parsing purger config", styled: .red)
+            Darwin.exit(1)
+        }
+        
         let getAllRemoteBranchesCommand =
         """
-        git branch -r | grep entitlements/bugfix/* | sed "s/origin\\///g"
+        git branch -r | grep \(purgerConfig.branchFolder)| sed "s/origin\\///g"
         """
         
         let jiraPrefixes = AnyCommand(rawStringInput: getAllRemoteBranchesCommand)

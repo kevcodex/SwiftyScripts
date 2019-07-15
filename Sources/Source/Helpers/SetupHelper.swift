@@ -80,6 +80,18 @@ struct SetupHelper {
         }
     }
     
+    static func createPurgerConfig(from url: URL) -> PurgerConfig? {
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let plistDecoder = PropertyListDecoder()
+            return try plistDecoder.decode(PurgerConfig.self, from: data)
+        } catch {
+            print(error)
+            return nil
+        }
+    }
+    
     static func createConfig(from url: URL) -> Config? {
         
         do {

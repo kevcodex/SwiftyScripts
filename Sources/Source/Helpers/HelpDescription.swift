@@ -33,8 +33,8 @@ extension HelpDisplayable where Self: Executable {
         
         for argument in arguments {
             let count = argument.argumentName.count
-            let whiteSapceCount = 15 - count
-            let whiteSpaces = repeatElement(" ", count: whiteSapceCount).joined()
+            let whiteSpaceCount = 15 - count
+            let whiteSpaces = repeatElement(" ", count: whiteSpaceCount).joined()
             argumentsString += "   \(argument.argumentName)\(whiteSpaces)\(argument.description) \n"
         }
         

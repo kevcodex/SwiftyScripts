@@ -28,12 +28,6 @@ struct BranchDeleterExecutable: Executable {
         
         let argumentParser = parseArguments(arguments)
         
-        if argumentParser.argumentsIsEmpty()  {
-            showHelp(for: arguments)
-            Console.writeMessage("Need to specify arguments like -v", styled: .red)
-            Darwin.exit(1)
-        }
-        
         var currentDirectory = FileManager.default.currentDirectoryPath
         if let directoryArgument: DirectoryArgument = argumentParser.retrieveArgument(),
             let directoryValue = directoryArgument.value  {

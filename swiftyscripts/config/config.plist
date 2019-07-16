@@ -61,8 +61,6 @@
 	</array>
 	<key>Purger</key>
 	<dict>
-		<key>repoURL</key>
-		<string>REPO_URL</string>
 		<key>branchFolder</key>
 		<string>BRANCH_FOLDER</string>
 		<key>Jira</key>
@@ -73,6 +71,8 @@
 			<string>JIRA_EMAIL</string>
 			<key>password</key>
 			<string>JIRA_PASSWORD</string>
+			<key>closedStatus</key>
+			<string>JIRA_CLOSED_STATUS</string>
 		</dict>
 	</dict>
 </dict>

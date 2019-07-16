@@ -19,6 +19,10 @@ extension Console {
 }
 
 extension Console {
+    static func writeWarning(_ message: String) {
+        writeMessage("Warning: \(message)", styled: .yellow)
+    }
+    
     static func writeWarning(_ error: Error) {
         writeMessage("Warning: \(error.localizedDescription)", styled: .yellow)
     }

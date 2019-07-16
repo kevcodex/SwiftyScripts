@@ -56,6 +56,8 @@ struct BranchDeleterExecutable: Executable {
             Darwin.exit(1)
         }
         
+        // MARK: Get all branches
+        Console.writeMessage("**Getting all branches")
         let getAllRemoteBranchesCommand =
         """
         git branch -r | grep \(purgerConfig.branchFolder)| sed "s/origin\\///g"
@@ -77,11 +79,41 @@ struct BranchDeleterExecutable: Executable {
             }
         })
         
-        guard let branchContexts = branches.nonEmpty else {
+        guard var branchContexts = branches.nonEmpty else {
             Console.writeMessage("Empty list of branches", styled: .red)
             Darwin.exit(1)
         }
         
+        // MARK: Check Status
+        Console.writeMessage("**Checking Status of branches")
+        let credentials = JIRACredentials(email: purgerConfig.jira.email,
+                                          password: purgerConfig.jira.password)
+        let jiraController = JIRAController(credentials: credentials)
         
+        jiraController.checkStatus(for: &branchContexts,
+                                   baseURL: purgerConfig.jira.url,
+                                   closedStatus: purgerConfig.jira.closedStatus ?? "Closed")
+        
+        for branch in branchContexts {
+            
+            guard branch.ticketIsClosed else {
+                continue
+            }
+            
+            // MARK: Checkout Branch
+            Console.writeMessage("**Checking out \(branch.branchName)...")
+            let checkoutCommand = GitCommand(arguments: [.checkout(branch: branch.branchName)])
+            CommandHelper.runCommand(checkoutCommand)
+            
+            // MARK: Delete Branch
+            Console.writeMessage("**Deleting \(branch.branchName)...")
+            let deleteRemote = GitCommand(arguments: [.deleteRemote(branch: branch.branchName)])
+            
+            // TODO: In future rather than stop app if failure, just save that it failed and print in final message
+            CommandHelper.runCommand(deleteRemote)
+        }
+        
+        // TODO: In future show list of branches deleted or not deleted
+        Console.writeMessage("Success! Finished Purging Branches!", styled: .green)
     }
 }

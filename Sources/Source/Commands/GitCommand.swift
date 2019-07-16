@@ -24,6 +24,7 @@ struct GitCommand: Command {
         case push
         case diff(branch1: String?, branch2: String, options: [DiffOptions])
         case reset
+        case deleteRemote(branch: String)
     }
     
     typealias Argument = GitType
@@ -76,6 +77,9 @@ struct GitCommand: Command {
                 }
             case .reset:
                 string += "reset --hard"
+                
+            case .deleteRemote(let branch):
+                string += "push origin -d \(branch)"
             }
             
             string += " "

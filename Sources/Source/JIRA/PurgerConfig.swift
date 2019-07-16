@@ -9,7 +9,6 @@ import Foundation
 
 struct PurgerConfig: Codable {
     let branchFolder: String
-    let repoURL: String
     let jira: Jira
     
     init(from decoder: Decoder) throws {
@@ -19,7 +18,6 @@ struct PurgerConfig: Codable {
                                                             forKey: .purger)
         
         branchFolder = try purgerContainer.decode(String.self, forKey: .branchFolder)
-        repoURL = try purgerContainer.decode(String.self, forKey: .repoURL)
         jira = try purgerContainer.decode(Jira.self, forKey: .jira)
     }
     
@@ -29,7 +27,6 @@ struct PurgerConfig: Codable {
     
     enum CodingKeys: String, CodingKey {
         case branchFolder
-        case repoURL
         case jira = "Jira"
     }
     
@@ -37,5 +34,6 @@ struct PurgerConfig: Codable {
         let url: String
         let email: String
         let password: String
+        let closedStatus: String?
     }
 }

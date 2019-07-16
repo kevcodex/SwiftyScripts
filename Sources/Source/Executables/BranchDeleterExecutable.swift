@@ -72,7 +72,7 @@ struct BranchDeleterExecutable: Executable {
             case .success(let string):
                 
                 let rawBranches = string.components(separatedBy: "\n").filter { !$0.isEmpty }
-                branches = rawBranches.map { BranchContext(branchName: $0) }
+                branches = rawBranches.map { BranchContext(branchName: $0, ticketIsClosed: false) }
             case .failure(let error):
                 Console.writeMessage(error)
                 Darwin.exit(1)

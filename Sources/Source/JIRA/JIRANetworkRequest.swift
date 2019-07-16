@@ -19,7 +19,9 @@ struct JIRANetworkRequest: NetworkRequest {
     
     var headers: [String : Any]?
     
-    var body: NetworkBody?
+    var body: NetworkBody? {
+        return nil
+    }
     
     var acceptableStatusCodes: [Int]
     

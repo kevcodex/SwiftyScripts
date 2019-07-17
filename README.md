@@ -1,6 +1,6 @@
 # Swifty Scripts
 
-A tool made in swift I use to help automate some processes. Originally was built to help automate the merging of different branches and deploying process for PW. But now will be made general for different use cases like automatic branch deletion.
+A tool made in swift I use to help automate some processes. Originally was built to help automate the merging of different branches and deploying process for PW. But now is made general for different use cases like automatic branch deletion.
 
 ***
 ## Description ##
@@ -13,6 +13,11 @@ COMMANDS:
 * build: Build all the targets listed in the `TargetsToRun` config 
 * jenkins: Triggers a Jenkins build for every Jenkins.schemes listed 
 * post-only: Only executes the post-PR portion of the team merge 
+* purger: Automatically delete branches based on a closed JIRA status 
+
+## Requirements ##
+* Xcode 11.0+
+* Swift 5.0+
 
 ## Getting Started ##
 * Clone this project
@@ -31,8 +36,6 @@ COMMANDS:
 	* `cd` into project directory
 	* Run `swift build`
 	* Run `.build/debug/{INSERT PROJECT NAME HERE}` with arguments (e.g. .build/debug/SwiftyScripts -v 3.10 -pv 3.9)
-	* -v or version is required
-	* Note: this binary can run independently of the package dependencies 
 * If you want to run binary locally with custom `SwiftyScripts` bash
 	* Run `export PATH=path_to_binary_folder:”${PATH}”`
 	* E.g. `export PATH=/Users/kchen/Documents/Xcode\ Play/TeamMergeAutomation/.build/x86_64-apple-macosx10.10/debug:"${PATH}"`

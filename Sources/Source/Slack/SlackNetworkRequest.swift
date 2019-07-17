@@ -28,7 +28,7 @@ struct SlackNetworkRequest: NetworkRequest {
     
     private(set) var body: NetworkBody?
 
-    static func foxInternalRequest(path: String, slackMessage: SlackMessage) -> SlackNetworkRequest {
+    static func postMessage(path: String, slackMessage: SlackMessage) -> SlackNetworkRequest {
                 
         let body: NetworkBody? = {
             let encoder = JSONEncoder()

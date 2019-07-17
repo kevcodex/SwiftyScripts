@@ -74,7 +74,7 @@ final class SlackController {
         var message = message
         message.channel = team.channel
         
-        let request: SlackNetworkRequest = .foxInternalRequest(path: team.path, slackMessage: message)
+        let request: SlackNetworkRequest = .postMessage(path: team.path, slackMessage: message)
 
         let messageOperation = SlackMessageOperation(request: request, message: message)
         

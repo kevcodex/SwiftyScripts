@@ -88,7 +88,21 @@ struct BranchDeleterExecutable: Executable {
                                    baseURL: purgerConfig.jira.url,
                                    closedStatus: purgerConfig.jira.closedStatus ?? "Closed")
         
+        if branchContexts.allSatisfy({ !$0.ticketIsClosed }) {
+            Console.writeMessage("Nothing to Purge!", styled: .green)
+            return
+        }
+        
+        let longestBranchName = branchContexts.max { $0.branchName.count < $1.branchName.count }
+        
+        var list = ""
+        
         for branch in branchContexts {
+            
+            let count = branch.branchName.count
+            let whiteSpaceCount = (longestBranchName?.branchName.count ?? 15) + 10 - count
+            let whiteSpaces = repeatElement(" ", count: whiteSpaceCount).joined()
+            list += "\(branch.branchName)\(whiteSpaces)IsClosed: \(branch.ticketIsClosed) \n"
             
             guard branch.ticketIsClosed else {
                 continue
@@ -106,6 +120,13 @@ struct BranchDeleterExecutable: Executable {
             // TODO: In future rather than stop app if failure, just save that it failed and print in final message
             CommandHelper.runCommand(deleteRemote)
         }
+        
+        Console.writeMessage(
+            """
+            Report:
+            \(list)
+            """
+        )
         
         // TODO: In future show list of branches deleted or not deleted
         Console.writeMessage("Success! Finished Purging Branches!", styled: .green)

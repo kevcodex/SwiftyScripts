@@ -10,9 +10,11 @@ import MiniNe
 
 class JenkinsProjectInfoOperation: AsyncOperation {
     
+    let baseURL: URL
     let credentials: JenkinsCredentials
     
-    init(credentials: JenkinsCredentials) {
+    init(baseURL: URL, credentials: JenkinsCredentials) {
+        self.baseURL = baseURL
         self.credentials = credentials
     }
     
@@ -25,7 +27,7 @@ class JenkinsProjectInfoOperation: AsyncOperation {
     
     override func execute() {
         let client = MiniNeClient()
-        let request = JenkinsNetworkRequest.projectInformationRequest(credentials: credentials)
+        let request = JenkinsNetworkRequest.projectInformationRequest(baseURL: baseURL, credentials: credentials)
         
         client.send(request: request) { (result) in
             

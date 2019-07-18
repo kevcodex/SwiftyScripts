@@ -13,6 +13,8 @@
 	</dict>
 	<key>Jenkins</key>
 	<dict>
+		<key>url</key>
+		<string>JENKINS_URL</string>
 		<key>credentials</key>
 		<dict>
 			<key>email</key>

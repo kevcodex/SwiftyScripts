@@ -19,10 +19,12 @@ enum JenkinsError: Error {
 
 final class JenkinsController {
     
+    private let baseURL: URL
     private let credentials: JenkinsCredentials
     private let operationQueue = OperationQueue()
     
-    init(credentials: JenkinsCredentials) {
+    init(baseURL: URL, credentials: JenkinsCredentials) {
+        self.baseURL = baseURL
         self.credentials = credentials
         operationQueue.maxConcurrentOperationCount = 5
     }
@@ -43,7 +45,7 @@ final class JenkinsController {
     /// Gets crumb and then posts build synchronously
     func startDeploymentBuild(with parameters: [String: Any], completion: @escaping (Result<Void, JenkinsError>) -> Void) {
         
-        let buildOperation = JenkinsBuildOperation(credentials: credentials, crumb: nil, parameters: parameters)
+        let buildOperation = JenkinsBuildOperation(baseURL: baseURL, credentials: credentials, crumb: nil, parameters: parameters)
         
         let fullCrumbOperations = crumbOperations { [weak self] (result) in
             guard let strongSelf = self else {
@@ -85,8 +87,8 @@ final class JenkinsController {
     
     func addDescriptionToLastBuild(description: String, completion: @escaping (Result<Void, JenkinsError>) -> Void) {
             
-        let projectInfoOperation = JenkinsProjectInfoOperation(credentials: credentials)
-        let descriptionModifierOperation = JenkinsDescriptionModifierOperation(credentials: credentials, jobDescription: description, crumb: nil, jobNumber: nil)
+        let projectInfoOperation = JenkinsProjectInfoOperation(baseURL: baseURL, credentials: credentials)
+        let descriptionModifierOperation = JenkinsDescriptionModifierOperation(baseURL: baseURL, credentials: credentials, jobDescription: description, crumb: nil, jobNumber: nil)
         
         let fullCrumbOperations = crumbOperations { [weak self] (result) in
             guard let strongSelf = self else {
@@ -157,12 +159,12 @@ final class JenkinsController {
         
         let maxBuildsCount = targets.count * 3
         
-        let projectInfoOperation = JenkinsProjectInfoOperation(credentials: credentials)
+        let projectInfoOperation = JenkinsProjectInfoOperation(baseURL: baseURL, credentials: credentials)
         
         var buildInfoOperations = [JenkinsBuildInfoOperation]()
         
         for _ in 1...maxBuildsCount {
-            let buildInfoOperation = JenkinsBuildInfoOperation(credentials: credentials, jobNumber: nil)
+            let buildInfoOperation = JenkinsBuildInfoOperation(baseURL: baseURL, credentials: credentials, jobNumber: nil)
             buildInfoOperations.append(buildInfoOperation)
         }
         
@@ -270,7 +272,7 @@ final class JenkinsController {
     }
     
     private func crumbOperations(completion: @escaping (Result<JenkinsCrumbResponse, JenkinsError>) -> Void) -> [Operation] {
-        let jenkinsCrumbOperation = JenkinsCrumbOperation(credentials: credentials)
+        let jenkinsCrumbOperation = JenkinsCrumbOperation(baseURL: baseURL, credentials: credentials)
         
         let completionBlock = BlockOperation { [weak jenkinsCrumbOperation] in
             guard let result = jenkinsCrumbOperation?.result else {

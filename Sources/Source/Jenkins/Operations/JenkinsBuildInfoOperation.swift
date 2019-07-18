@@ -10,10 +10,12 @@ import MiniNe
 
 class JenkinsBuildInfoOperation: AsyncOperation {
     
+    let baseURL: URL
     let credentials: JenkinsCredentials
     var jobNumber: Int?
     
-    init(credentials: JenkinsCredentials, jobNumber: Int?) {
+    init(baseURL: URL, credentials: JenkinsCredentials, jobNumber: Int?) {
+        self.baseURL = baseURL
         self.credentials = credentials
         self.jobNumber = jobNumber
     }
@@ -33,7 +35,8 @@ class JenkinsBuildInfoOperation: AsyncOperation {
         }
         
         let client = MiniNeClient()
-        let request = JenkinsNetworkRequest.buildInformationRequest(credentials: credentials,
+        let request = JenkinsNetworkRequest.buildInformationRequest(baseURL: baseURL,
+                                                                    credentials: credentials,
                                                                     jobNumber: String(jobNumber))
         
         client.send(request: request) { (result) in

@@ -10,9 +10,7 @@ import MiniNe
 
 struct JenkinsNetworkRequest: NetworkRequest {
     
-    var baseURL: URL? {
-        return URL(string: "https://jenkins.admin.foxdcg.com")
-    }
+    var baseURL: URL?
     
     private(set) var path: String
     
@@ -28,11 +26,13 @@ struct JenkinsNetworkRequest: NetworkRequest {
         return nil
     }
     
-    private init(path: String,
+    private init(baseURL: URL,
+                 path: String,
                  method: HTTPMethod,
                  parameters: [String: Any]?,
                  headers: [String: Any]?,
                  acceptableStatusCodes: [Int] = Array(200..<300)) {
+        self.baseURL = baseURL
         self.path = path
         self.method = method
         self.parameters = parameters
@@ -42,7 +42,8 @@ struct JenkinsNetworkRequest: NetworkRequest {
     
     /// General request for any jenkins url path.
     /// Will convert credentials to basic auth.
-    static func generalRequest(credentials: JenkinsCredentials,
+    static func generalRequest(baseURL: URL,
+                               credentials: JenkinsCredentials,
                                path: String,
                                method: HTTPMethod,
                                parameters: [String: Any]? = nil,
@@ -63,32 +64,35 @@ struct JenkinsNetworkRequest: NetworkRequest {
             return newHeaders
         }
         
-        return self.init(path: path,
+        return self.init(baseURL: baseURL,
+                         path: path,
                          method: method,
                          parameters: parameters,
                          headers: headers,
                          acceptableStatusCodes: acceptableStatusCodes)
     }
     
-    static func crumbIssuerRequest(credentials: JenkinsCredentials) -> JenkinsNetworkRequest {
+    static func crumbIssuerRequest(baseURL: URL, credentials: JenkinsCredentials) -> JenkinsNetworkRequest {
         
-        return generalRequest(credentials: credentials,
+        return generalRequest(baseURL: baseURL,
+                              credentials: credentials,
                               path: "/crumbIssuer/api/json",
                               method: .get)
     }
     
-    static func buildRequest(credentials: JenkinsCredentials, crumb: String, parameters: [String: Any]) -> JenkinsNetworkRequest {
+    static func buildRequest(baseURL: URL, credentials: JenkinsCredentials, crumb: String, parameters: [String: Any]) -> JenkinsNetworkRequest {
         
         let headers: [String: Any] = ["Jenkins-Crumb": crumb]
         
-        return generalRequest(credentials: credentials,
+        return generalRequest(baseURL: baseURL,
+                              credentials: credentials,
                               path: "/job/dcg-tvos-framework/buildWithParameters",
                               method: .post,
                               parameters: parameters,
                               headers: headers)
     }
     
-    static func descriptionModifierRequest(credentials: JenkinsCredentials, crumb: String, jobNumber: String, parameters: [String: Any]) -> JenkinsNetworkRequest {
+    static func descriptionModifierRequest(baseURL: URL, credentials: JenkinsCredentials, crumb: String, jobNumber: String, parameters: [String: Any]) -> JenkinsNetworkRequest {
         
         let headers: [String: Any] = ["Jenkins-Crumb": crumb]
         
@@ -97,7 +101,8 @@ struct JenkinsNetworkRequest: NetworkRequest {
         
         let path = "/job/dcg-tvos-framework/\(jobNumber)/submitDescription"
         
-        return generalRequest(credentials: credentials,
+        return generalRequest(baseURL: baseURL,
+                              credentials: credentials,
                               path: path,
                               method: .post,
                               parameters: parameters,
@@ -106,16 +111,20 @@ struct JenkinsNetworkRequest: NetworkRequest {
     }
     
     /// Fetches information related to the job in json format
-    static func projectInformationRequest(credentials: JenkinsCredentials) -> JenkinsNetworkRequest {
+    static func projectInformationRequest(baseURL: URL, credentials: JenkinsCredentials) -> JenkinsNetworkRequest {
         
-        return generalRequest(credentials: credentials,
+        return generalRequest(baseURL: baseURL,
+                              credentials: credentials,
                               path: "/job/dcg-tvos-framework/api/json",
                               method: .get)
     }
     
     /// Fetches information related to the build in json format
-    static func buildInformationRequest(credentials: JenkinsCredentials, jobNumber: String) -> JenkinsNetworkRequest {
+    static func buildInformationRequest(baseURL: URL, credentials: JenkinsCredentials, jobNumber: String) -> JenkinsNetworkRequest {
         
-        return generalRequest(credentials: credentials, path: "/job/dcg-tvos-framework/\(jobNumber)/api/json", method: HTTPMethod.get)
+        return generalRequest(baseURL: baseURL,
+                              credentials: credentials,
+                              path: "/job/dcg-tvos-framework/\(jobNumber)/api/json",
+            method: HTTPMethod.get)
     }
 }

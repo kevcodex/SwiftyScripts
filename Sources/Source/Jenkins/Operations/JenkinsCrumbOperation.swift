@@ -10,9 +10,11 @@ import MiniNe
 
 class JenkinsCrumbOperation: AsyncOperation {
     
+    let baseURL: URL
     let credentials: JenkinsCredentials
     
-    init(credentials: JenkinsCredentials) {
+    init(baseURL: URL, credentials: JenkinsCredentials) {
+        self.baseURL = baseURL
         self.credentials = credentials
     }
     
@@ -25,7 +27,7 @@ class JenkinsCrumbOperation: AsyncOperation {
     
     override func execute() {
         let client = MiniNeClient()
-        let request = JenkinsNetworkRequest.crumbIssuerRequest(credentials: credentials)
+        let request = JenkinsNetworkRequest.crumbIssuerRequest(baseURL: baseURL, credentials: credentials)
         
         client.send(request: request) { (result) in
             

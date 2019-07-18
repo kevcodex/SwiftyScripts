@@ -11,6 +11,7 @@ import Foundation
 typealias TargetBuildMapping = [String: JenkinsStartBuildNumber]
 
 struct JenkinsConfig: Decodable {
+    let url: String
     let credentials: JenkinsCredentials
     let delayBetweenBuilds: Int
     let label: Label

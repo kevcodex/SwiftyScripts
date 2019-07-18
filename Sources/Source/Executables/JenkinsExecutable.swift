@@ -94,7 +94,13 @@ struct JenkinsExecutable: Executable, SlackMessageDeliverable {
             exit(1, with: message)
         }
         
-        let jenkinsController = JenkinsController(credentials: jenkinsConfig.credentials)
+        guard let baseURL = URL(string: jenkinsConfig.url) else {
+            let message = "Missing Jenkins base URL"
+            exit(1, with: message)
+        }
+        
+        let jenkinsController = JenkinsController(baseURL: baseURL,
+                                                  credentials: jenkinsConfig.credentials)
         
         if !jenkinsConfig.hasValidBuildNumbers() {
             

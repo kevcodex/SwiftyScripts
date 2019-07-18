@@ -10,12 +10,14 @@ import MiniNe
 
 class JenkinsDescriptionModifierOperation: AsyncOperation {
     
+    let baseURL: URL
     let credentials: JenkinsCredentials
     let jobDescription: String
     var crumb: String?
     var jobNumber: Int?
     
-    init(credentials: JenkinsCredentials, jobDescription: String, crumb: String?, jobNumber: Int?) {
+    init(baseURL: URL, credentials: JenkinsCredentials, jobDescription: String, crumb: String?, jobNumber: Int?) {
+        self.baseURL = baseURL
         self.credentials = credentials
         self.jobDescription = jobDescription
         self.crumb = crumb
@@ -44,7 +46,8 @@ class JenkinsDescriptionModifierOperation: AsyncOperation {
         let parameters = ["description": jobDescription]
         
         let client = MiniNeClient()
-        let request = JenkinsNetworkRequest.descriptionModifierRequest(credentials: credentials,
+        let request = JenkinsNetworkRequest.descriptionModifierRequest(baseURL: baseURL,
+                                                                       credentials: credentials,
                                                                        crumb: crumb,
                                                                        jobNumber: String(jobNumber),
                                                                        parameters: parameters)
@@ -83,7 +86,8 @@ class JenkinsDescriptionModifierOperation: AsyncOperation {
         }
         
         let client = MiniNeClient()
-        let request = JenkinsNetworkRequest.generalRequest(credentials: credentials,
+        let request = JenkinsNetworkRequest.generalRequest(baseURL: baseURL,
+                                                           credentials: credentials,
                                                            path: url.path + "/api/json",
                                                            method: .get)
         

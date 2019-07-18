@@ -16,6 +16,12 @@ enum BitbucketError: Error {
 
 final class BitbucketController {
     
+    let baseURL: URL
+    
+    init(baseURL: URL) {
+        self.baseURL = baseURL
+    }
+    
     static func parameters(for sourceBranch: String, targetBranch: String) -> [String: Any] {
         let parameters: [String: Any] = ["create": "",
                                          "sourceBranch": sourceBranch,
@@ -27,7 +33,7 @@ final class BitbucketController {
 
         let parameters = BitbucketController.parameters(for: sourceBranch, targetBranch: targetBranch)
         
-        let request = BitbucketNetworkRequest.createPullRequestOnWeb(parameters: parameters)
+        let request = BitbucketNetworkRequest.createPullRequestOnWeb(baseURL: baseURL, parameters: parameters)
         
         guard let urlRequest = request.buildURLRequest(),
             let url = urlRequest.url else {

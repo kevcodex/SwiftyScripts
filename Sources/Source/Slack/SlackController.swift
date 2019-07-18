@@ -30,9 +30,11 @@ final class SlackController {
         postMessage(message, completion: completion)
     }
     
-    func postPRMessage(bitbucketParameters: [String: Any], completion: @escaping (Result<Void, SlackError>) -> Void) {
+    func postPRMessage(bitbucketBaseURL: URL, bitbucketParameters: [String: Any], completion: @escaping (Result<Void, SlackError>) -> Void) {
         
-        let urlString = BitbucketNetworkRequest.createPullRequestOnWeb(parameters: bitbucketParameters).buildURLRequest()?.url?.absoluteString
+        let urlString = BitbucketNetworkRequest.createPullRequestOnWeb(
+            baseURL: bitbucketBaseURL,
+            parameters: bitbucketParameters).buildURLRequest()?.url?.absoluteString
         
         let message = SlackMessage.prMessage(slackID: slackUser?.taggedString ?? "Anonymous", urlString: urlString)
         

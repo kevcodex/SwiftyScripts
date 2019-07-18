@@ -309,9 +309,12 @@ struct MergeExecutable: Executable, SlackMessageDeliverable {
                         }
         })
         
-        if shouldRedirectToBitbucket {
+        let bitbucketURLString = SetupHelper.bitbucketURL(from: dictionary)
+        if shouldRedirectToBitbucket,
+            let url = URL(string: bitbucketURLString ?? "") {
+            
             Console.writeMessage("**Opening bitbucket PR creation...")
-            let controller = BitbucketController()
+            let controller = BitbucketController(baseURL: url)
             
             do {
                 try controller.redirectToBitbucket(sourceBranch: teamMergeBranch.path, targetBranch: releaseBranch.path)
@@ -324,15 +327,18 @@ struct MergeExecutable: Executable, SlackMessageDeliverable {
         
         Console.writeMessage("**Notifing Slack...")
         
-        let parameters = BitbucketController.parameters(for: teamMergeBranch.path, targetBranch: releaseBranch.path)
-        
-        slackController.postPRMessage(bitbucketParameters: parameters) { result in
+        if let bitbucketURL = URL(string: bitbucketURLString ?? "") {
             
-            switch result {
-            case .success:
-                Console.writeMessage("Successfully notified slack! \n", styled: .blue)
-            case .failure(let error):
-                Console.writeWarning(error)
+            let parameters = BitbucketController.parameters(for: teamMergeBranch.path, targetBranch: releaseBranch.path)
+            
+            slackController.postPRMessage(bitbucketBaseURL: bitbucketURL, bitbucketParameters: parameters) { result in
+                
+                switch result {
+                case .success:
+                    Console.writeMessage("Successfully notified slack! \n", styled: .blue)
+                case .failure(let error):
+                    Console.writeWarning(error)
+                }
             }
         }
         

@@ -21,6 +21,15 @@ struct SetupHelper {
         return dictionary[Keys.projectName] as? String        
     }
     
+    static func bitbucketURL(from dictionary: [String: Any]?) -> String? {
+            
+            guard let dictionary = dictionary else {
+                return nil
+            }
+            
+            return dictionary[Keys.bitbucketURL] as? String
+        }
+    
     static func createBranches(from dictionary: [String: Any]?, version: String) -> [Branch]? {
         
         guard let dictionary = dictionary else {
@@ -111,6 +120,7 @@ private extension SetupHelper {
     struct Keys {
         
         static let projectName = "project"
+        static let bitbucketURL = "bitbucketURL"
         static let targets = "TargetsToRun"
         static let branches = "BranchesToRun"
         static let jenkins = "Jenkins"

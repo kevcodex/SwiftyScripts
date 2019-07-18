@@ -9,9 +9,7 @@ import Foundation
 import MiniNe
 
 struct BitbucketNetworkRequest: NetworkRequest {
-    var baseURL: URL? {
-        return URL(string: "https://fng-bitbucket.fox.com")
-    }
+    var baseURL: URL?
     
     private(set) var path: String
     
@@ -25,12 +23,14 @@ struct BitbucketNetworkRequest: NetworkRequest {
     
     private(set) var acceptableStatusCodes: [Int]
     
-    private init(path: String,
+    private init(baseURL: URL,
+                 path: String,
                  method: HTTPMethod,
                  parameters: [String: Any]?,
                  headers: [String: Any]?,
                  body: NetworkBody? = nil,
                  acceptableStatusCodes: [Int] = Array(200..<300)) {
+        self.baseURL = baseURL
         self.path = path
         self.method = method
         self.parameters = parameters
@@ -40,9 +40,10 @@ struct BitbucketNetworkRequest: NetworkRequest {
     }
     
     /// This is the network request for the web based PR creation
-    static func createPullRequestOnWeb(parameters: [String: Any]) -> BitbucketNetworkRequest {
+    static func createPullRequestOnWeb(baseURL: URL, parameters: [String: Any]) -> BitbucketNetworkRequest {
         
-        return self.init(path: "/projects/dcgpe/repos/dcg-tvos-framework/pull-requests",
+        return self.init(baseURL: baseURL,
+                         path: "/projects/dcgpe/repos/dcg-tvos-framework/pull-requests",
                          method: .get,
                          parameters: parameters,
                          headers: nil)
